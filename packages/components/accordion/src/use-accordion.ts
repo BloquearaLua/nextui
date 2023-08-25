@@ -45,7 +45,13 @@ interface Props extends HTMLNextUIProps<"div"> {
    */
   itemClasses?: AccordionItemProps["classNames"];
 }
-
+/**
+ * TS 中的Pick类型：用于从给定的类型中选择指定的属性，创建一个新的类型。
+ *    type NewType = Pick<Source, Keys>;
+ *  - Source: 是原始类型，您要从中选择属性;
+ *  - Keys: 是一个包含要选择的属性名称的联合类型。
+ *
+ */
 export type UseAccordionProps<T extends object = {}> = Props &
   AccordionGroupVariantProps &
   Pick<
@@ -106,6 +112,7 @@ export function useAccordion<T extends object>(props: UseAccordionProps<T>) {
   const [focusedKey, setFocusedKey] = useState<Key | null>(null);
 
   const Component = as || "div";
+  /** 这里的typeof的优先级应该高于===运算 */
   const shouldFilterDOMProps = typeof Component === "string";
 
   const domRef = useDOMRef(ref);
@@ -124,11 +131,25 @@ export function useAccordion<T extends object>(props: UseAccordionProps<T>) {
     let treeChildren: any = [];
 
     /**
-     * This is a workaround for rendering ReactNode children in the AccordionItem.
+     * This is a workaround[临时的解决方法] for rendering ReactNode children in the AccordionItem.
      * @see https://github.com/adobe/react-spectrum/issues/3882
+     */
+    /**
+     * React.Children.map是React提供的一个用于处理React元素子节点的函数
+     *    - children 单个React/多个React元素[JSX]
+     *    - child    当前子节点
+     *    - index    当前子节点索引
+     * React.Children.map(children, function (child, index) {
+     *   // 对每个子节点进行操作
+     *   // 返回处理后的结果
+     * });
      */
     React.Children.map(children, (child) => {
       if (React.isValidElement(child) && typeof child.props?.children !== "string") {
+        /**
+         * React.cloneElement(element, [props], [...children])
+         * 用于浅克隆一个已有的React元素，向新元素添加/修改属性，是否指定子元素，如未指定，则保留原有的
+         * */
         const clonedChild = React.cloneElement(child, {
           // @ts-ignore
           hasChildItems: false,

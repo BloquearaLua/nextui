@@ -93,10 +93,20 @@ interface Props extends HTMLNextUIProps<"span"> {
   classNames?: SlotsToClasses<AvatarSlots>;
 }
 
+/**
+ *  Omit 表示从现有类型的基础上，新建一个类型，并排除掉部分类型
+ *  type NewType = Omit<ExistingProps, OmitProp1, OmitProp2...>
+ *
+ *  与Exclude的区别：
+ *    Exclude 同为在已有类型基础上新建一个类型，但它是从联合类型里排除。
+ *   type status = 'none' | 'updating' | 'finished'
+ *   type NewType = Exclude<status, 'none'>
+ */
 export type UseAvatarProps = Props &
   Omit<AvatarVariantProps, "children" | "isInGroup" | "isInGridGroup">;
 
 export function useAvatar(props: UseAvatarProps = {}) {
+  // 接收avatarGroupContext传下来的状态值
   const groupContext = useAvatarGroupContext();
   const isInGroup = !!groupContext;
 
@@ -110,6 +120,13 @@ export function useAvatar(props: UseAvatarProps = {}) {
     fallback,
     alt = name || "avatar",
     imgRef: imgRefProp,
+    /**
+     * 如果父元素是否传值了
+     * => 该值
+     * ≠> groupContext上下文是否传了
+     *    ? => 该值
+     *      ≠> false
+     */
     color = groupContext?.color ?? "default",
     radius = groupContext?.radius ?? "full",
     size = groupContext?.size ?? "md",
@@ -131,6 +148,7 @@ export function useAvatar(props: UseAvatarProps = {}) {
   const domRef = useDOMRef(ref);
   const imgRef = useDOMRef(imgRefProp);
 
+  // 管理焦点（设置样式，聚焦声音）
   const {isFocusVisible, isFocused, focusProps} = useFocusRing();
   const {isHovered, hoverProps} = useHover({isDisabled});
 

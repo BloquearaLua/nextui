@@ -7,7 +7,7 @@ import {UseAccordionProps, useAccordion} from "./use-accordion";
 import AccordionItem from "./accordion-item";
 
 export interface AccordionProps extends UseAccordionProps {}
-
+/** 创建一个div元素引用的ref，然后它的props属性为[AccordionProps] */
 const AccordionGroup = forwardRef<"div", AccordionProps>((props, ref) => {
   const {
     Component,

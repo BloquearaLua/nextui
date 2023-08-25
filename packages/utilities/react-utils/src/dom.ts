@@ -118,13 +118,23 @@ export function createFocusableRef<T extends HTMLElement = HTMLElement>(
   };
 }
 
+/**
+ * 处理dom引用的钩子
+ * 约束了DOM元素类型必须为HTMLElement或其子类，如果没有指定类型参数，那么默认为HTMLElement
+ * @param ref
+ *
+ * @returns
+ */
 export function useDOMRef<T extends HTMLElement = HTMLElement>(
   ref?: RefObject<T | null> | Ref<T | null>,
 ) {
+  // 创建一个ref引用，这个引用在组件重新渲染的时候不会发生变化
   const domRef = useRef<T>(null);
 
+  // 允许父元素访问子元素的实例，将domRef暴露给传递进来的ref
   useImperativeHandle(ref, () => domRef.current);
 
+  // 将创建的ref返回，这个ref指向一个DOM元素，可以通过useDOMRef拿到，方便操作
   return domRef;
 }
 
